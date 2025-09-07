@@ -119,6 +119,7 @@ const feedbackSchema = {
     areasForImprovement: { type: Type.ARRAY, items: { type: Type.STRING } },
     clarityAndStructureScore: { type: Type.STRING },
     suggestions: { type: Type.ARRAY, items: { type: Type.STRING } },
+    scorePercent: { type: Type.INTEGER },
   },
 };
 
@@ -213,10 +214,12 @@ export const analyzeAnswer = async (questionText: string, imageBase64: string): 
                           
                           Your tasks are:
                           1. Perform OCR on the image to read the student's answer.
-                          2. Analyze the transcribed text for accuracy, completeness, and clarity.
-                          3. Provide structured feedback. DO NOT give a numerical score or a simple "right/wrong" grade. Focus on being a helpful, educational guide.
+                          2. Analyze the transcribed text for accuracy, completeness, clarity, and coverage of key concepts.
+                          3. Provide structured feedback AND an overall percentage score.
+                             - scorePercent: an integer 0-100 representing overall quality/correctness.
+                             - Base it on correctness, completeness, and clarity (weight correctness highest).
                           
-                          Your feedback must be in JSON format.
+                          Output must be valid JSON matching the provided schema strictly (no extra fields).
                         `,
                     },
                 ],

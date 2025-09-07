@@ -38,6 +38,7 @@ export interface Feedback {
   areasForImprovement: string[];
   clarityAndStructureScore: string;
   suggestions: string[];
+  scorePercent?: number;
 }
 
 export interface AnalysisState {

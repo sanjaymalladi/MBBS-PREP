@@ -24,7 +24,14 @@ const FeedbackSection: React.FC<{ title: string; color: 'green' | 'red' | 'blue'
 const FeedbackDisplay: React.FC<FeedbackDisplayProps> = ({ feedback }) => {
   return (
     <div className="mt-6">
-      <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-2">Feedback Analysis</h3>
+      <div className="flex items-baseline justify-between">
+        <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 mb-2">Feedback Analysis</h3>
+        {typeof feedback.scorePercent === 'number' && (
+          <div className="ml-4 px-3 py-1 rounded-md bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 text-sm font-semibold">
+            Score: {Math.round(feedback.scorePercent)}%
+          </div>
+        )}
+      </div>
       
       <FeedbackSection title="Key Concepts Covered (Strengths)" color="green">
         <ul className="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-300">
