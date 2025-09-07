@@ -16,6 +16,7 @@ const App: React.FC = () => {
   const [analysisStates, setAnalysisStates] = useState<Record<string, AnalysisState>>({});
   const [showErrorLog, setShowErrorLog] = useState<boolean>(false);
   const [showDashboard, setShowDashboard] = useState<boolean>(true);
+  const [showGenerator, setShowGenerator] = useState<boolean>(false);
 
   const handleGenerateSession = useCallback(async (subject: Subject, topic: string) => {
     setIsGenerating(true);
@@ -57,9 +58,10 @@ const App: React.FC = () => {
   return (
     <div className="bg-slate-50 dark:bg-gray-900 min-h-screen font-sans text-slate-800 dark:text-slate-200">
       <Header
-        onShowDashboard={() => { setShowDashboard(true); setShowErrorLog(false); }}
+        onNewPaper={() => { setShowGenerator(true); setShowDashboard(false); setShowErrorLog(false); }}
+        onShowDashboard={() => { setShowDashboard(true); setShowErrorLog(false); setShowGenerator(false); }}
         showDashboard={showDashboard}
-        onShowErrorLog={() => { setShowErrorLog(!showErrorLog); if (!showErrorLog) setShowDashboard(false); }}
+        onShowErrorLog={() => { setShowErrorLog(!showErrorLog); if (!showErrorLog) { setShowDashboard(false); setShowGenerator(false); } }}
         showErrorLog={showErrorLog}
       />
       <main className="container mx-auto p-4 md:p-8">
@@ -67,7 +69,7 @@ const App: React.FC = () => {
           <Dashboard />
         )}
 
-        {!showDashboard && !showErrorLog && (
+        {showGenerator && !showDashboard && !showErrorLog && (
           <>
             <SessionGenerator onGenerate={handleGenerateSession} disabled={isGenerating} />
             {isGenerating && (

@@ -7,9 +7,10 @@ interface HeaderProps {
   showErrorLog?: boolean;
   onShowDashboard?: () => void;
   showDashboard?: boolean;
+  onNewPaper?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onShowErrorLog, showErrorLog, onShowDashboard, showDashboard }) => {
+const Header: React.FC<HeaderProps> = ({ onShowErrorLog, showErrorLog, onShowDashboard, showDashboard, onNewPaper }) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -26,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ onShowErrorLog, showErrorLog, onShowDas
           <div className="flex items-center gap-4">
             <a
               href="#new-paper"
-              onClick={(e) => { e.preventDefault(); onShowDashboard && onShowDashboard(); }}
+              onClick={(e) => { e.preventDefault(); onNewPaper && onNewPaper(); }}
               className="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700"
             >
               New Paper
