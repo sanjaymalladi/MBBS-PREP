@@ -43,6 +43,9 @@ dist
 dist-ssr
 *.local
 
+# Large local assets
+papers/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
