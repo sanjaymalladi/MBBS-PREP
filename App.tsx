@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import Header from './components/Header';
+import Dashboard from './components/Dashboard';
 import SessionGenerator from './components/SessionGenerator';
 import PracticeSession from './components/PracticeSession';
 import ErrorLog from './components/ErrorLog';
@@ -14,6 +15,7 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [analysisStates, setAnalysisStates] = useState<Record<string, AnalysisState>>({});
   const [showErrorLog, setShowErrorLog] = useState<boolean>(false);
+  const [showDashboard, setShowDashboard] = useState<boolean>(true);
 
   const handleGenerateSession = useCallback(async (subject: Subject, topic: string) => {
     setIsGenerating(true);
@@ -55,11 +57,17 @@ const App: React.FC = () => {
   return (
     <div className="bg-slate-50 dark:bg-gray-900 min-h-screen font-sans text-slate-800 dark:text-slate-200">
       <Header
-        onShowErrorLog={() => setShowErrorLog(!showErrorLog)}
+        onShowDashboard={() => { setShowDashboard(true); setShowErrorLog(false); }}
+        showDashboard={showDashboard}
+        onShowErrorLog={() => { setShowErrorLog(!showErrorLog); if (!showErrorLog) setShowDashboard(false); }}
         showErrorLog={showErrorLog}
       />
       <main className="container mx-auto p-4 md:p-8">
-        {!showErrorLog && (
+        {showDashboard && (
+          <Dashboard />
+        )}
+
+        {!showDashboard && !showErrorLog && (
           <>
             <SessionGenerator onGenerate={handleGenerateSession} disabled={isGenerating} />
             {isGenerating && (

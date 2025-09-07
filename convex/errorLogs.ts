@@ -88,12 +88,44 @@ export const getErrorLogStats = query({
       return acc;
     }, {} as Record<string, { total: number; correct: number }>);
 
+    // Group by topic per subject
+    const topicStats = allLogs.reduce((acc, log) => {
+      const key = `${log.subject}::${log.topic}`;
+      if (!acc[key]) {
+        acc[key] = { subject: log.subject, topic: log.topic, total: 0, correct: 0 };
+      }
+      acc[key].total++;
+      if (log.isCorrect) acc[key].correct++;
+      return acc;
+    }, {} as Record<string, { subject: string; topic: string; total: number; correct: number }>);
+
+    // Determine strong and weak topics (min attempts threshold to avoid noise)
+    const MIN_ATTEMPTS = 3;
+    const topicsArray = Object.values(topicStats).map(t => ({
+      subject: t.subject,
+      topic: t.topic,
+      total: t.total,
+      correct: t.correct,
+      accuracy: t.total > 0 ? (t.correct / t.total) * 100 : 0,
+    }));
+
+    const eligibleTopics = topicsArray.filter(t => t.total >= MIN_ATTEMPTS);
+    const strongTopics = [...eligibleTopics]
+      .sort((a, b) => b.accuracy - a.accuracy)
+      .slice(0, 8);
+    const weakTopics = [...eligibleTopics]
+      .sort((a, b) => a.accuracy - b.accuracy)
+      .slice(0, 8);
+
     return {
       totalAttempts,
       correctAttempts,
       incorrectAttempts,
       accuracy: Math.round(accuracy * 100) / 100,
       subjectStats,
+      topicStats: topicsArray,
+      strongTopics,
+      weakTopics,
     };
   },
 });

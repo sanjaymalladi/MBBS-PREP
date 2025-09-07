@@ -5,9 +5,11 @@ import { UserButton } from '@clerk/clerk-react';
 interface HeaderProps {
   onShowErrorLog?: () => void;
   showErrorLog?: boolean;
+  onShowDashboard?: () => void;
+  showDashboard?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ onShowErrorLog, showErrorLog }) => {
+const Header: React.FC<HeaderProps> = ({ onShowErrorLog, showErrorLog, onShowDashboard, showDashboard }) => {
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -22,6 +24,18 @@ const Header: React.FC<HeaderProps> = ({ onShowErrorLog, showErrorLog }) => {
           </div>
 
           <div className="flex items-center gap-4">
+            {onShowDashboard && (
+              <button
+                onClick={onShowDashboard}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  showDashboard
+                    ? 'bg-purple-500 text-white'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                }`}
+              >
+                Dashboard
+              </button>
+            )}
             {onShowErrorLog && (
               <button
                 onClick={onShowErrorLog}
