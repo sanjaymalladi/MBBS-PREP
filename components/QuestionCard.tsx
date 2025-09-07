@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { MCQ, ShortQuestion, AnalysisState } from '../types';
 import { Spinner } from './Spinner';
 import FeedbackDisplay from './FeedbackDisplay';
@@ -90,6 +90,9 @@ const MCQOptions: React.FC<{
 
 const AnswerUploader: React.FC<{ onUpload: (base64: string) => void }> = ({ onUpload }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const [showCamera, setShowCamera] = useState<boolean>(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -102,22 +105,104 @@ const AnswerUploader: React.FC<{ onUpload: (base64: string) => void }> = ({ onUp
     }
   };
 
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    setShowCamera(false);
+  };
+
+  const startCamera = async () => {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Camera is not supported in this browser.');
+        return;
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setShowCamera(true);
+    } catch (error) {
+      console.error('Unable to access camera:', error);
+      alert('Unable to access camera. Please check permissions.');
+    }
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 1080;
+    canvas.height = video.videoHeight || 720;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    onUpload(dataUrl);
+    stopCamera();
+  };
+
+  useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
   return (
     <div className="mt-4">
       <input
         type="file"
         accept="image/*"
+        capture="environment"
         ref={fileInputRef}
         onChange={handleFileChange}
         className="hidden"
       />
-      <button
-        onClick={() => fileInputRef.current?.click()}
-        className="bg-teal-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-teal-600 transition"
-      >
-        Upload Handwritten Answer
-      </button>
-       <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Practice writing your answer by hand, take a photo, and upload it for AI-powered feedback.</p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="bg-teal-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-teal-600 transition"
+        >
+          Upload Handwritten Answer
+        </button>
+        <button
+          onClick={startCamera}
+          className="bg-indigo-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-indigo-600 transition"
+        >
+          Use Camera
+        </button>
+      </div>
+
+      {showCamera && (
+        <div className="mt-3 p-3 border border-slate-300 dark:border-slate-600 rounded-md bg-slate-50 dark:bg-slate-700/40">
+          <div className="aspect-video w-full bg-black rounded overflow-hidden">
+            <video ref={videoRef} playsInline muted className="w-full h-full object-contain" />
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button
+              onClick={capturePhoto}
+              className="bg-green-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-green-700 transition"
+            >
+              Capture Photo
+            </button>
+            <button
+              onClick={stopCamera}
+              className="bg-slate-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-slate-600 transition"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">Practice writing your answer by hand, then take a photo with your camera or upload an image for AI-powered feedback.</p>
     </div>
   );
 };
