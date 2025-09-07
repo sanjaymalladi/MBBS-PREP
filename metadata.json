@@ -1,0 +1,7 @@
+{
+  "name": "MBBS Prepper",
+  "description": "An AI-powered web application to help 1st year MBBS students master the CBME curriculum by generating unique, high-yield practice questions and providing intelligent feedback on handwritten answers.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
