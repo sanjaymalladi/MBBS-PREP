@@ -24,6 +24,13 @@ const Header: React.FC<HeaderProps> = ({ onShowErrorLog, showErrorLog, onShowDas
           </div>
 
           <div className="flex items-center gap-4">
+            <a
+              href="#new-paper"
+              onClick={(e) => { e.preventDefault(); onShowDashboard && onShowDashboard(); }}
+              className="px-4 py-2 rounded-lg font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700"
+            >
+              New Paper
+            </a>
             {onShowDashboard && (
               <button
                 onClick={onShowDashboard}

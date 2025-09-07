@@ -223,23 +223,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, type, onAnalyzeAn
 
       {type === 'mcq' && <MCQOptions mcq={question as MCQ} onSelect={() => {}} subject={subject} topic={topic} />}
 
-      {type !== 'mcq' && type !== 'essay' && (
-        <>
-            <AnswerUploader onUpload={handleUpload} />
-            {analysisState?.isLoading && (
-              <div className="flex items-center mt-4 text-slate-600 dark:text-slate-300">
-                  <Spinner />
-                  <span className="ml-2">Analyzing your answer...</span>
-              </div>
-            )}
-            {analysisState?.error && <p className="mt-4 text-red-500">{analysisState.error}</p>}
-            {analysisState?.feedback && <FeedbackDisplay feedback={analysisState.feedback} />}
-        </>
-      )}
-
-      {type === 'essay' && (
-         <p className="text-sm text-slate-500 dark:text-slate-400 mt-4 p-3 bg-slate-100 dark:bg-slate-700/50 rounded-md">This question is for offline practice to improve your long-form answer writing. No answer upload or model answer is provided for this format.</p>
-      )}
+      <>
+        <AnswerUploader onUpload={handleUpload} />
+        {analysisState?.isLoading && (
+          <div className="flex items-center mt-4 text-slate-600 dark:text-slate-300">
+              <Spinner />
+              <span className="ml-2">Analyzing your answer...</span>
+          </div>
+        )}
+        {analysisState?.error && <p className="mt-4 text-red-500">{analysisState.error}</p>}
+        {analysisState?.feedback && <FeedbackDisplay feedback={analysisState.feedback} />}
+      </>
 
     </div>
   );
